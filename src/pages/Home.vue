@@ -28,7 +28,7 @@ export default {
   name: 'Home',
   data() {
     return {
-      wallet: new Wallet(this),
+      // wallet: new Wallet(this),
       chart: null,
       price1: 1,
       price2: 1,
@@ -36,25 +36,37 @@ export default {
   },
   methods: {
     buy(selection) {
-      const fun = selection === 1 ? this.wallet.contract.buy1 : this.wallet.contract.buy2;
-      const price = selection === 1 ? this.price1 : this.price2;
-      fun(0, {
-        value: price,
-        gas: 220000,
-        gasPrice: 1000000000 * 100,
-      }, (error, result) => {
-        if (!error) {
-          this.$message({
-            type: 'info',
-            message: `已发送 ${result}`,
-          });
-        } else {
-          this.$message({
-            type: 'error',
-            message: error,
-          });
-        }
-      });
+      const price = Number(prompt("请输入下注金额(ETH)"));
+      if (isNaN(price) || price < 0) {
+        alert("请输入有效押注金额");
+        return;
+      }
+      if (selection === 1) {
+        this.price1 += price;
+      } else {
+        this.price2 += price;
+      }
+      this.setChart(this.price1, this.price2);
+      // alert(price)
+      // const fun = selection === 1 ? this.wallet.contract.buy1 : this.wallet.contract.buy2;
+      // const price = selection === 1 ? this.price1 : this.price2;
+      // fun(0, {
+      //   value: price,
+      //   gas: 220000,
+      //   gasPrice: 1000000000 * 100,
+      // }, (error, result) => {
+      //   if (!error) {
+      //     this.$message({
+      //       type: 'info',
+      //       message: `已发送 ${result}`,
+      //     });
+      //   } else {
+      //     this.$message({
+      //       type: 'error',
+      //       message: error,
+      //     });
+      //   }
+      // });
     },
     setChart(price1, price2) {
       this.chart.setOption({
@@ -87,8 +99,7 @@ export default {
               normal: {
                 show: true,
                 position: 'insideLeft',
-                // formatter: value => `${Math.abs(value.data)} Wei`,
-                formatter: value => `${Math.abs(1000000)} Wei`,
+                formatter: value => `${Math.abs(value.data)} ETH`,
               },
             },
             data: [-price1],
@@ -101,7 +112,7 @@ export default {
               normal: {
                 show: true,
                 position: 'insideRight',
-                formatter: value => `${Math.abs(value.data)} Wei`,
+                formatter: value => `${Math.abs(value.data)} ETH`,
               },
             },
             data: [price2],
@@ -112,19 +123,19 @@ export default {
   },
   mounted() {
     this.chart = echarts.init(this.$refs.chart);
-    this.setChart(1, 1);
-    this.wallet.contract.allOf(0, (error, result) => {
-      if (error) {
-        this.$message({
-          type: 'error',
-          message: error,
-        });
-      } else {
-        this.price1 = Number(result[2]);
-        this.price2 = Number(result[3]);
-        this.setChart(this.price1, this.price2);
-      }
-    });
+    this.setChart(this.price1, this.price2);
+    // this.wallet.contract.allOf(0, (error, result) => {
+    //   if (error) {
+    //     this.$message({
+    //       type: 'error',
+    //       message: error,
+    //     });
+    //   } else {
+    //     this.price1 = Number(result[2]);
+    //     this.price2 = Number(result[3]);
+    //     this.setChart(this.price1, this.price2);
+    //   }
+    // });
   },
 };
 </script>
