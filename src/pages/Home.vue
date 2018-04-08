@@ -15,8 +15,8 @@
       | 支持德国
     el-button(type="primary", @click="buy(2)")
       | 支持法国
-    //el-button(type="addOne")
-      //| 我也要发起赌局
+    el-button(type="addOne")
+      | 我也要发起赌局
   img.post(src="/static/post.jpg")
 </template>
 
@@ -87,7 +87,8 @@ export default {
               normal: {
                 show: true,
                 position: 'insideLeft',
-                formatter: value => `${Math.abs(value.data)} Wei`,
+                // formatter: value => `${Math.abs(value.data)} Wei`,
+                formatter: value => `${Math.abs(1000000)} Wei`,
               },
             },
             data: [-price1],
