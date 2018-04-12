@@ -26,9 +26,7 @@
     el-button(type="danger", @click="buy(1)")
       | 支持德国
     el-button(type="primary", @click="buy(2)")
-      | 支持法国
-    el-button(type="addOne")
-      | 我也要发起赌局
+      | 支持俄罗斯
   img.post(src="/static/post.jpg")
 </template>
 
@@ -40,7 +38,7 @@ export default {
   name: 'Home',
   data() {
     return {
-      // wallet: new Wallet(this),
+      wallet: new Wallet(this),
       chart: null,
       price1: 1,
       price2: 1,
@@ -48,42 +46,31 @@ export default {
   },
   methods: {
     buy(selection) {
-      const price = Number(prompt("请输入下注金额(ETH)"));
-      if (isNaN(price) || price < 0) {
-        alert("请输入有效押注金额");
-        return;
-      }
-      if (selection === 1) {
-        this.price1 += price;
-      } else {
-        this.price2 += price;
-      }
-      this.setChart(this.price1, this.price2);
-      // alert(price)
-      // const fun = selection === 1 ? this.wallet.contract.buy1 : this.wallet.contract.buy2;
-      // const price = selection === 1 ? this.price1 : this.price2;
-      // fun(0, {
-      //   value: price,
-      //   gas: 220000,
-      //   gasPrice: 1000000000 * 100,
-      // }, (error, result) => {
-      //   if (!error) {
-      //     this.$message({
-      //       type: 'info',
-      //       message: `已发送 ${result}`,
-      //     });
-      //   } else {
-      //     this.$message({
-      //       type: 'error',
-      //       message: error,
-      //     });
-      //   }
-      // });
+      const fun = this.wallet.contract.addBet;
+      const prop = selection === 1 ? 1 : 0;
+      const betValue = 100000000000000000;
+      fun(prop, {
+        value: betValue,
+        gas: 220000,
+        gasPrice: 1000000000 * 100,
+      }, (error, result) => {
+        if (!error) {
+          this.$message({
+            type: 'info',
+            message: `已发送 ${result}`,
+          });
+        } else {
+          this.$message({
+            type: 'error',
+            message: error,
+          });
+        }
+      });
     },
     setChart(price1, price2) {
       this.chart.setOption({
         legend: {
-          data: ['支持德国', '支持法国'],
+          data: ['支持德国', '支持俄罗斯'],
           show: false,
         },
         xAxis: {
@@ -111,20 +98,20 @@ export default {
               normal: {
                 show: true,
                 position: 'insideLeft',
-                formatter: value => `${Math.abs(value.data)} ETH`,
+                formatter: value => `${Math.abs(value.data)} Wei`,
               },
             },
             data: [-price1],
           },
           {
-            name: '支持法国',
+            name: '支持俄罗斯',
             type: 'bar',
             stack: '总量',
             label: {
               normal: {
                 show: true,
                 position: 'insideRight',
-                formatter: value => `${Math.abs(value.data)} ETH`,
+                formatter: value => `${Math.abs(value.data)} Wei`,
               },
             },
             data: [price2],
@@ -135,31 +122,39 @@ export default {
   },
   mounted() {
     this.chart = echarts.init(this.$refs.chart);
-    this.setChart(this.price1, this.price2);
-    // this.wallet.contract.allOf(0, (error, result) => {
-    //   if (error) {
-    //     this.$message({
-    //       type: 'error',
-    //       message: error,
-    //     });
-    //   } else {
-    //     this.price1 = Number(result[2]);
-    //     this.price2 = Number(result[3]);
-    //     this.setChart(this.price1, this.price2);
-    //   }
-    // });
-  },
+    //this.setChart(1, 1);
+    this.wallet.contract.queryRedBalance((error, result) => {
+      if (error) {
+        this.$message({
+          type: 'error',
+          message: error,
+        });
+      } else {
+        this.price1 = Number(result);
+        this.setChart(this.price1, this.price2);
+      }
+    });
+    this.wallet.contract.queryBlueBalance((error, result) => {
+      if (error) {
+        this.$message({
+          type: 'error',
+          message: error,
+        });
+      } else {
+        this.price2 = Number(result);
+        this.setChart(this.price1, this.price2);
+      }
+    });
+  }
 };
 </script>
 
 <style lang="stylus" scoped>
 #home
   text-align center
-#rule
-  text-align left
 #chart
   width 100%
-  height 150px
+  height 100px
 .post
   padding 40px
   width 60%
