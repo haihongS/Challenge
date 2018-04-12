@@ -27,6 +27,8 @@
       | 支持德国
     el-button(type="primary", @click="buy(2)")
       | 支持俄罗斯
+    el-button(type="addOne")
+      | 我也要发起赌局
   img.post(src="/static/post.jpg")
 </template>
 
@@ -98,7 +100,7 @@ export default {
               normal: {
                 show: true,
                 position: 'insideLeft',
-                formatter: value => `${Math.abs(value.data)} Wei`,
+                formatter: value => `${Math.abs(value.data) / 1000000000000000000} ETH`,
               },
             },
             data: [-price1],
@@ -111,7 +113,7 @@ export default {
               normal: {
                 show: true,
                 position: 'insideRight',
-                formatter: value => `${Math.abs(value.data)} Wei`,
+                formatter: value => `${Math.abs(value.data) / 1000000000000000000} ETH`,
               },
             },
             data: [price2],
