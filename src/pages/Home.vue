@@ -48,11 +48,15 @@ export default {
   },
   methods: {
     buy(selection) {
+      const betValue = Number(prompt("请输入下注金额(ETH)"));
+      if (isNaN(betValue) || betValue <= 0) {
+        alert("请输入有效押注金额");
+        return;
+      }
       const fun = this.wallet.contract.addBet;
       const prop = selection === 1 ? 1 : 0;
-      const betValue = 100000000000000000;
       fun(prop, {
-        value: betValue,
+        value: betValue * 1000000000000000000,
         gas: 220000,
         gasPrice: 1000000000 * 100,
       }, (error, result) => {
