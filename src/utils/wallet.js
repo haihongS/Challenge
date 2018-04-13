@@ -16,7 +16,7 @@ export default class Wallet {
     this.wallet.eth.defaultAccount = this.account;
     const Contract = this.wallet.eth.contract(abi);
     /* this.contract = Contract.at('0x545ef6db327e0861f199222c0c2d162a0f63e723'); */
-    this.contract = Contract.at('0x86490bB933b61e3DF862797382bd35d046E836Ec');
+    this.contract = Contract.at('0x5EB5A00718A8527FF815c63590a19139096347aD');
   }
 
   toWei(price) {
